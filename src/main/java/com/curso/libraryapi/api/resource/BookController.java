@@ -2,6 +2,7 @@ package com.curso.libraryapi.api.resource;
 
 import com.curso.libraryapi.api.dto.BookDTO;
 import com.curso.libraryapi.api.exception.ApiErros;
+import com.curso.libraryapi.exception.BussinessExcetpion;
 import com.curso.libraryapi.model.entity.Book;
 import com.curso.libraryapi.service.BookService;
 import org.modelmapper.ModelMapper;
@@ -43,5 +44,11 @@ public class BookController {
         BindingResult bindingResult = ex.getBindingResult();
 
         return new ApiErros(bindingResult);
+    }
+
+    @ExceptionHandler(BussinessExcetpion.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiErros handleBussinessExceptions(BussinessExcetpion ex){
+        return new ApiErros(ex);
     }
 }
