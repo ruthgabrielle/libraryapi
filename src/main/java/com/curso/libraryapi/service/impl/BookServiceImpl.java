@@ -1,5 +1,6 @@
 package com.curso.libraryapi.service.impl;
 
+import com.curso.libraryapi.exception.BussinessExcetpion;
 import com.curso.libraryapi.model.entity.Book;
 import com.curso.libraryapi.model.repository.BookRepository;
 import com.curso.libraryapi.service.BookService;
@@ -16,7 +17,9 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Book save(Book book) {
-
+        if(repository.existsByIsbn(book.getIsbn() )){
+            throw new BussinessExcetpion("Isbn já cadastrado");
+        }
         return (Book) repository.save(book);
     }
 }
