@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.DomainEvents;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -21,6 +22,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+
+import javax.crypto.spec.OAEPParameterSpec;
+import javax.swing.text.html.Option;
+
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -109,6 +115,32 @@ public class BookControllerTest {
 
     }
 
+    @Test
+    @DisplayName("Deve obter informações de um livro")
+    public void getBookDetailsTest() throws Exception {
+        Long id = 1l;
+
+        Book book = Book.builder()
+                .id(id)
+                .title(createNewBook().getTitle())
+                .author(createNewBook().getAuthor())
+                .isbn(createNewBook().getIsbn())
+                .build();
+
+        BDDMockito.given(service.getById(id)).willReturn(Optional.of(book));
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .get(BOOK_API.concat("/" + id))
+                .accept(MediaType.APPLICATION_JSON);
+
+        mvc
+                .perform(request)
+                .andExpect(status().isOk())
+                .andExpect( jsonPath("id").value(id) )
+                .andExpect( jsonPath("title").value(createNewBook().getTitle()))
+                .andExpect( jsonPath("author").value(createNewBook().getAuthor()))
+                .andExpect( jsonPath("isbn").value(createNewBook().getIsbn()));
+    }
 
     private BookDTO createNewBook() {
         return BookDTO.builder().author("Artur").title("As aventuras").isbn("001").build();
